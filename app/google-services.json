@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "430836745497",
+    "firebase_url": "https://eatitv2-8b445.firebaseio.com",
+    "project_id": "eatitv2-8b445",
+    "storage_bucket": "eatitv2-8b445.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430836745497:android:ffc0f1cae4b89aa4f83188",
+        "android_client_info": {
+          "package_name": "com.aim2u.kotlineatitv2client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430836745497-veh6tgn5vpotaeknvlfo951l2s2qajr0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aim2u.kotlineatitv2client",
+            "certificate_hash": "ad92bbe545534e3b0f7ff31a8cb3763d0d53b9e0"
+          }
+        },
+        {
+          "client_id": "430836745497-edm6qchqbrs40t0lfeeq6ppsaqs24l9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd7hx_oF9de3h6gQUQdrvwTSEN4SzfHCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430836745497-edm6qchqbrs40t0lfeeq6ppsaqs24l9l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

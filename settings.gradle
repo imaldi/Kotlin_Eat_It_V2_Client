@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name='Kotlin Eat It V2 Client'
