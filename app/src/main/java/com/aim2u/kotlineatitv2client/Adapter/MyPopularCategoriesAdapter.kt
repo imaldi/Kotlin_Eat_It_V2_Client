@@ -32,16 +32,12 @@ internal var popularCategoryModel: List<PopularCategoryModel>):RecyclerView.Adap
     }
 
     inner class MyViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
-        //@BindView(R.id.txt_category_name)
         var category_name:TextView?= null
-//        @BindView(R.id.txt_best_deal)
-//        var best_deal:TextView?= null
-        //@BindView(R.id.category_image)
         var category_image: CircleImageView?= null
 
         init {
             category_name = itemView.findViewById(R.id.txt_category_name) as TextView
-            category_image = itemView.findViewById(R.id.category_image  )
+            category_image = itemView.findViewById(R.id.category_image  ) as CircleImageView
         }
     }
 }

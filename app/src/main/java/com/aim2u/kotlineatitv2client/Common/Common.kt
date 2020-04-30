@@ -3,6 +3,9 @@ package com.aim2u.kotlineatitv2client.Common
 import com.aim2u.kotlineatitv2client.Model.UserModel
 
 object Common{
+    val CATEGORY_REF: String = "Category"
+    val FULL_WIDTH_COLUMN: Int = 1
+    val DEFAULT_COLUMN_COUNT: Int = 0
     val BEST_DEAL_REF: String = "BestDeals"
     val POPULAR_REF: String = "MostPopular"
     val USER_REFERENCE = "Users"

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -22,6 +24,9 @@ class HomeFragment : Fragment() {
     var recylerView:RecyclerView? = null
     var viewPager:LoopingViewPager? = null
 
+    var layoutAnimationController:LayoutAnimationController? = null
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +42,7 @@ class HomeFragment : Fragment() {
             val listData = it
             val adapter = MyPopularCategoriesAdapter(context!!, listData)
             recylerView!!.adapter = adapter
+            recylerView!!.layoutAnimation = layoutAnimationController
         })
 
         homeViewModel.bestDealList.observe(viewLifecycleOwner, Observer {
@@ -48,6 +54,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView(root: View) {
+        layoutAnimationController = AnimationUtils.loadLayoutAnimation(context,R.anim.layout_item_from_left)
         viewPager = root.findViewById(R.id.view_pager)
         recylerView = root.findViewById(R.id.recyler_popular) as RecyclerView
         recylerView!!.setHasFixedSize(true)
