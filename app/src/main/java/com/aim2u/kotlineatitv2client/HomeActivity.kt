@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Toast
 import com.aim2u.kotlineatitv2client.EventBus.CategoryClick
+import com.aim2u.kotlineatitv2client.EventBus.FoodItemClick
 import com.aim2u.kotlineatitv2client.R
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -44,7 +45,7 @@ class HomeActivity : AppCompatActivity() {
             setOf(
                 R.id.nav_home,
                 R.id.nav_menu,
-                R.id.nav_slideshow,
+                R.id.nav_food_detail,
                 R.id.nav_tools,
                 R.id.nav_share,
                 R.id.nav_send
@@ -80,6 +81,14 @@ class HomeActivity : AppCompatActivity() {
         if(event.isSuccess){
             //Toast.makeText(this, "Click to"+event.category.name, Toast.LENGTH_SHORT).show()
             findNavController(R.id.nav_host_fragment).navigate(R.id.nav_food_list)
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun onFoodSelected(event: FoodItemClick){
+        if(event.isSuccess){
+            //Toast.makeText(this, "Click to"+event.category.name, Toast.LENGTH_SHORT).show()
+            findNavController(R.id.nav_host_fragment).navigate(R.id.nav_food_detail)
         }
     }
 }

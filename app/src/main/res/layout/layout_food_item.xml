@@ -61,13 +61,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_favorite_border_black"/>
+                android:src="@drawable/ic_favorite_border_black_24dp"/>
             <ImageView
                 android:id="@+id/img_quick_cart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_shopping_cart_black"/>
+                android:src="@drawable/ic_shopping_cart_black_24dp"/>
 
         </LinearLayout>
         </LinearLayout>

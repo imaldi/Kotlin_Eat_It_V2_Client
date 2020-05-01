@@ -77,5 +77,8 @@ dependencies {
 
     //pt7
     implementation 'org.greenrobot:eventbus:3.1.1'
+    //pt8
+    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
+    implementation 'com.github.andremion:counterfab:1.2.0'
 
 }
