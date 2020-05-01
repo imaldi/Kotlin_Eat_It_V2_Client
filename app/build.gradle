@@ -75,4 +75,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
+    //pt7
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
 }
