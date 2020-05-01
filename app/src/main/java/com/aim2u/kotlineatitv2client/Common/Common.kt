@@ -5,6 +5,7 @@ import com.aim2u.kotlineatitv2client.Model.FoodModel
 import com.aim2u.kotlineatitv2client.Model.UserModel
 
 object Common{
+    val COMMENT_REF: String = "Comments"
     var foodSelected: FoodModel?=null
     var categorySelected: CategoryModel?=null
     val CATEGORY_REF: String = "Category"

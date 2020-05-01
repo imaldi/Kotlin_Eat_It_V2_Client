@@ -17,4 +17,5 @@
     <string name="popular_categories">Popular Categories</string>
     <string name="best_deals">Best Deal</string>
     <string name="menu_category">Categories</string>
+    <string name="comment_hint">Please write something</string>
 </resources>
