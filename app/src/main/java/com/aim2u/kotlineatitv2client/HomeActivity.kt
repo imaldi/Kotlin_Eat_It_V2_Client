@@ -47,7 +47,6 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_menu,
                 R.id.nav_food_detail,
                 R.id.nav_tools,
-                R.id.nav_share,
                 R.id.nav_send
             ), drawerLayout
         )

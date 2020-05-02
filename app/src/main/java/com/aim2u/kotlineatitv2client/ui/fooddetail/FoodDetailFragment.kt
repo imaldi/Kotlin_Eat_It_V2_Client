@@ -13,6 +13,7 @@ import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.Model.CommentModel
 import com.aim2u.kotlineatitv2client.Model.FoodModel
 import com.aim2u.kotlineatitv2client.R
+import com.aim2u.kotlineatitv2client.ui.comment.CommentFragment
 import com.andremion.counterfab.CounterFab
 import com.bumptech.glide.Glide
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
@@ -149,6 +150,12 @@ class FoodDetailFragment : Fragment() {
             showDialogRating()
         }
 
+        //Event (pt10)
+        btnShowComment!!.setOnClickListener{
+            val commentFragment = CommentFragment.getInstance()
+            commentFragment.show(activity!!.supportFragmentManager,"CommentFragment")
+        }
+
     }
 
     private fun showDialogRating() {
@@ -170,7 +177,7 @@ class FoodDetailFragment : Fragment() {
             commentModel.comment = edt_comment.text.toString()
             commentModel.ratingValue = ratingBar.rating
             val serverTimeStamp = HashMap<String,Any>()
-            serverTimeStamp["timestamp"] = ServerValue.TIMESTAMP
+            serverTimeStamp["timeStamp"] = ServerValue.TIMESTAMP
             commentModel.commentTimeStamp = serverTimeStamp
 
             foodDetailViewModel.setCommentModel(commentModel)
