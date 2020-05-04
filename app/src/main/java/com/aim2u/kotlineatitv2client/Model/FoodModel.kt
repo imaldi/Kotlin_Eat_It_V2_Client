@@ -14,4 +14,7 @@ class FoodModel{
     var ratingValue: Double = 0.toDouble()
     var ratingCount: Long = 0.toLong()
 
+    //pt11
+    var userSelectedAddon:MutableList<AddonModel>?=null
+    var userSelectedSize:SizeModel?=null
 }
