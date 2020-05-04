@@ -2,6 +2,7 @@ package com.aim2u.kotlineatitv2client.ui.comment
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aim2u.kotlineatitv2client.Adapter.MyCategoriesAdapter
 import com.aim2u.kotlineatitv2client.Adapter.MyCommentAdapter
 import com.aim2u.kotlineatitv2client.Callback.ICommentCallback
 import com.aim2u.kotlineatitv2client.Common.Common
@@ -28,6 +30,7 @@ class CommentFragment : BottomSheetDialogFragment(),
 
     private var commentViewModel:CommentViewModel?=null
     private var listener:ICommentCallback
+    private var adapter: MyCommentAdapter?=null
 
     private var recycler_comment:RecyclerView?=null
 
@@ -46,14 +49,15 @@ class CommentFragment : BottomSheetDialogFragment(),
         val itemView = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_comment_fragment,container,false)
         initViews(itemView)
         loadCommentFromFirebase()
-        commentViewModel!!.mutableLiveDataCommentList.observe(this, Observer { commentList ->
-            val adapter = MyCommentAdapter(context!!,commentList)
+        commentViewModel!!.mutableLiveDataCommentList.observe(this, Observer {
+            adapter = MyCommentAdapter(requireContext(),it)
             recycler_comment!!.adapter = adapter
         })
         return itemView
     }
 
     private fun loadCommentFromFirebase() {
+        Log.d("LOAD_COMMENT_FROM_FIREBASE", "I AM HERE")
         dialog!!.show()
 
         val commentModels = ArrayList<CommentModel>()

@@ -28,6 +28,7 @@ class FoodDetailViewModel : ViewModel() {
         if (mutableLiveDataComment == null)
             mutableLiveDataComment = MutableLiveData()
 
+//        mutableLiveDataComment!!.value = Common
         return mutableLiveDataComment!!
     }
 
