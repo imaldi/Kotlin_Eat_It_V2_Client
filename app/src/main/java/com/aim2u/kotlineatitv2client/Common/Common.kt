@@ -1,8 +1,6 @@
 package com.aim2u.kotlineatitv2client.Common
 
-import com.aim2u.kotlineatitv2client.Model.CategoryModel
-import com.aim2u.kotlineatitv2client.Model.FoodModel
-import com.aim2u.kotlineatitv2client.Model.UserModel
+import com.aim2u.kotlineatitv2client.Model.*
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -15,6 +13,28 @@ object Common{
             return finalPrice.replace(".",",")
         } else
             return "0,00"
+    }
+
+    fun calculateExtraPrice(
+        userSelectedSize: SizeModel?,
+        userSelectedAddon: MutableList<AddonModel>?
+    ): Double {
+        var result :Double = 0.0
+        if(userSelectedSize == null && userSelectedAddon == null)
+            return 0.0
+        else if(userSelectedSize == null){
+            for (addOnModel in userSelectedAddon!!)
+                result += addOnModel.price!!.toDouble()
+            return result
+        } else if (userSelectedAddon == null){
+            result = userSelectedSize!!.price.toDouble()
+            return result
+        } else{
+            result = userSelectedSize!!.price.toDouble()
+            for (addOnModel in userSelectedAddon!!)
+                result += addOnModel.price!!.toDouble()
+            return result
+        }
     }
 
     val COMMENT_REF: String = "Comments"

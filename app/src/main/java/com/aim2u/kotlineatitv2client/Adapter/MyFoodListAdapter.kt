@@ -19,8 +19,10 @@ import com.aim2u.kotlineatitv2client.EventBus.FoodItemClick
 import com.aim2u.kotlineatitv2client.Model.FoodModel
 import com.aim2u.kotlineatitv2client.R
 import com.bumptech.glide.Glide
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 
@@ -105,22 +107,85 @@ class MyFoodListAdapter (internal var context: Context,
             cartItem.foodImage = foodList.get(position).image!!
             cartItem.foodPrice = foodList.get(position).price!!.toDouble()
             cartItem.foodQuantity = 1
-            cartItem.foodExtraSize = 0.0
+            cartItem.foodExtraPrice = 0.0
             cartItem.foodAddon = "Default"
             cartItem.foodSize = "Default"
 
-            compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
+            cartDataSource.getItemWithAllOptionsInCart(Common.currentUser!!.uid!!,
+                cartItem.foodId,
+                cartItem.foodSize!!,
+                cartItem.foodAddon!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(context,"Add to cart success",Toast.LENGTH_SHORT).show()
-                    //Here we wi send a notify to MainActivity to update counterFab
-                    EventBus.getDefault().postSticky(
-                        CountCartEvent(true)
-                    )
-                },{
-                    t: Throwable? -> Toast.makeText(context,"[INSERT CART]"+t!!.message,Toast.LENGTH_SHORT).show()
-                }))
+                .subscribe (object : SingleObserver<CartItem>{
+                    override fun onSuccess(cartItemFromDB: CartItem) {
+                        if (cartItemFromDB.equals(cartItem)){
+                            //If Item Already in database, just update
+                            cartItemFromDB.foodExtraPrice = cartItem.foodExtraPrice
+                            cartItemFromDB.foodAddon = cartItem.foodAddon
+                            cartItemFromDB.foodSize = cartItem.foodSize
+                            cartItemFromDB.foodQuantity = cartItemFromDB.foodQuantity + cartItem.foodQuantity
+
+                            cartDataSource.updateCart(cartItemFromDB)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe (object : SingleObserver<Int>{
+                                    override fun onSuccess(t: Int) {
+                                        Toast.makeText(context,"Update Cart Success",Toast.LENGTH_SHORT).show()
+                                        EventBus.getDefault().postSticky(CountCartEvent(true))
+                                    }
+
+                                    override fun onSubscribe(d: Disposable) {
+
+                                    }
+
+                                    override fun onError(e: Throwable) {
+                                        Toast.makeText(context,"UPDATE CART"+e.message,Toast.LENGTH_SHORT).show()
+                                    }
+
+                                })
+                        } else {
+                            //if item is not available in database, just insert
+                            compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+                                    Toast.makeText(context,"Add to cart success",Toast.LENGTH_SHORT).show()
+                                    //Here we wi send a notify to MainActivity to update counterFab
+                                    EventBus.getDefault().postSticky(
+                                        CountCartEvent(true)
+                                    )
+                                },{
+                                        t: Throwable? -> Toast.makeText(context,"[INSERT CART]"+t!!.message,Toast.LENGTH_SHORT).show()
+                                }))
+                        }
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+
+                    }
+
+                    override fun onError(e: Throwable) {
+                        if (e.message!!.contains("empty")){
+                            compositeDisposable.add(cartDataSource.insertOrReplaceAll(cartItem)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+                                    Toast.makeText(context,"Add to cart success",Toast.LENGTH_SHORT).show()
+                                    //Here we wi send a notify to MainActivity to update counterFab
+                                    EventBus.getDefault().postSticky(
+                                        CountCartEvent(true)
+                                    )
+                                },{
+                                        t: Throwable? -> Toast.makeText(context,"[INSERT CART]"+t!!.message,Toast.LENGTH_SHORT).show()
+                                }))
+                        } else {
+                            Toast.makeText(context,"[CART ERROR]"+e.message,Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+
+                })
 
         }
     }

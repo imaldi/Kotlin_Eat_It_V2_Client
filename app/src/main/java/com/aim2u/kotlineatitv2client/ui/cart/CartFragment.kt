@@ -1,4 +1,4 @@
-package com.aim2u.kotlineatitv2client.ui.tools
+package com.aim2u.kotlineatitv2client.ui.cart
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aim2u.kotlineatitv2client.R
 
-class ToolsFragment : Fragment() {
+class CartFragment : Fragment() {
 
-    private lateinit var toolsViewModel: ToolsViewModel
+    private lateinit var cartViewModel: CartViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        toolsViewModel =
-            ViewModelProviders.of(this).get(ToolsViewModel::class.java)
+        cartViewModel =
+            ViewModelProviders.of(this).get(CartViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_tools, container, false)
         val textView: TextView = root.findViewById(R.id.text_tools)
-        toolsViewModel.text.observe(this, Observer {
+        cartViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
