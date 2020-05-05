@@ -14,20 +14,37 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Toast
+import com.aim2u.kotlineatitv2client.Database.CartDataSource
+import com.aim2u.kotlineatitv2client.Database.CartDatabase
+import com.aim2u.kotlineatitv2client.Database.LocalCartDataSource
 import com.aim2u.kotlineatitv2client.EventBus.CategoryClick
+import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
 import com.aim2u.kotlineatitv2client.EventBus.FoodItemClick
 import com.aim2u.kotlineatitv2client.R
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import com.aim2u.kotlineatitv2client.Common.Common
+import kotlinx.android.synthetic.main.app_bar_home.*
 
 class HomeActivity : AppCompatActivity() {
 
+    private lateinit var cartDataSource: CartDataSource
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    override fun onResume() {
+        super.onResume()
+        countCartItem()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        cartDataSource = LocalCartDataSource(CartDatabase.getInstance(this).cartDao())
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -52,6 +69,8 @@ class HomeActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        countCartItem()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -89,5 +108,32 @@ class HomeActivity : AppCompatActivity() {
             //Toast.makeText(this, "Click to"+event.category.name, Toast.LENGTH_SHORT).show()
             findNavController(R.id.nav_host_fragment).navigate(R.id.nav_food_detail)
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun onCountCartEvent(event: CountCartEvent){
+        if(event.isSuccess){
+            countCartItem()
+        }
+    }
+
+    private fun countCartItem() {
+        cartDataSource.countItemInCart(Common.currentUser!!.uid!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object :SingleObserver<Int>{
+                override fun onSuccess(t: Int) {
+                    fab.count = t
+                }
+
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onError(e: Throwable) {
+                    sequenceOf(Toast.makeText(this@HomeActivity, "[COUNT CART]" + e.message, Toast.LENGTH_SHORT))
+                }
+
+            })
     }
 }
