@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     //pt2
     override fun onStop() {
-        if(listener!=null)
+        //if(listener!=null)
             firebaseAuth.removeAuthStateListener(listener)
         compositeDisposable.clear()
         super.onStop()
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 //Already Login
 //                Toast.makeText(this@MainActivity,"Already login",Toast.LENGTH_SHORT).show()
 
-                checkUserFromFirebase(user!!)
+                checkUserFromFirebase(user)
             }else{
                 //Not Login
                 //val accessToken =
@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity() {
 
     //pt4
     private fun checkUserFromFirebase(user:FirebaseUser) {
-        dialog!!.show()
-        userRef!!.child(user!!.uid)
+        dialog.show()
+        userRef.child(user.uid)
             .addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onCancelled(p0: DatabaseError) {
                     Toast.makeText(this@MainActivity,""+p0.message,Toast.LENGTH_SHORT).show()
@@ -97,9 +97,9 @@ class MainActivity : AppCompatActivity() {
                         val userModel = p0.getValue(UserModel::class.java)
                         goToHomeActivity(userModel)
                     } else{
-                        showRegisterDialog(user!!)
+                        showRegisterDialog(user)
                     }
-                    dialog!!.dismiss()
+                    dialog.dismiss()
                 }
             })
 
@@ -119,11 +119,11 @@ class MainActivity : AppCompatActivity() {
         val edt_phone = itemView.findViewById<EditText>(R.id.edt_phone)
 
         //set
-        edt_phone.setText(user!!.phoneNumber)
+        edt_phone.setText(user.phoneNumber)
 
         builder.setView(itemView)
-        builder.setNegativeButton("CANCEL"){dialogInterface, i -> dialogInterface.dismiss()  }
-        builder.setPositiveButton("REGISTER"){dialogInterface, i ->
+        builder.setNegativeButton("CANCEL"){dialogInterface, _ -> dialogInterface.dismiss()  }
+        builder.setPositiveButton("REGISTER"){dialogInterface, _ ->
             if(TextUtils.isDigitsOnly(edt_name.text.toString()))
             {
                 Toast.makeText(this@MainActivity, "Please enter your name",Toast.LENGTH_SHORT).show()
@@ -134,12 +134,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             val userModel = UserModel()
-            userModel.uid = user!!.uid
+            userModel.uid = user.uid
             userModel.name = edt_name.text.toString()
             userModel.address = edt_address.text.toString()
             userModel.phone = edt_phone.text.toString()
 
-            userRef!!.child(user!!.uid)
+            userRef.child(user.uid)
                 .setValue(userModel)
                 .addOnCompleteListener{task ->
                     if (task.isSuccessful){
@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
 
     //pt2
     private fun signInWithCustomToken(custommToken: String){
-        dialog!!.dismiss()
+        dialog.dismiss()
     }
 
 }

@@ -24,15 +24,15 @@ object Common{
             return 0.0
         else if(userSelectedSize == null){
             for (addOnModel in userSelectedAddon!!)
-                result += addOnModel.price!!.toDouble()
+                result += addOnModel.price.toDouble()
             return result
         } else if (userSelectedAddon == null){
-            result = userSelectedSize!!.price.toDouble()
+            result = userSelectedSize.price.toDouble()
             return result
         } else{
-            result = userSelectedSize!!.price.toDouble()
-            for (addOnModel in userSelectedAddon!!)
-                result += addOnModel.price!!.toDouble()
+            result = userSelectedSize.price.toDouble()
+            for (addOnModel in userSelectedAddon)
+                result += addOnModel.price.toDouble()
             return result
         }
     }

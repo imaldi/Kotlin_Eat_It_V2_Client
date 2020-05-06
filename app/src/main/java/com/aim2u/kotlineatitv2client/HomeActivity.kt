@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Toast
+import androidx.navigation.NavController
 import com.aim2u.kotlineatitv2client.Database.CartDataSource
 import com.aim2u.kotlineatitv2client.Database.CartDatabase
 import com.aim2u.kotlineatitv2client.Database.LocalCartDataSource
@@ -29,12 +30,14 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import com.aim2u.kotlineatitv2client.Common.Common
+import com.aim2u.kotlineatitv2client.EventBus.HideFABCart
 import kotlinx.android.synthetic.main.app_bar_home.*
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var cartDataSource: CartDataSource
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController:NavController
 
     override fun onResume() {
         super.onResume()
@@ -49,13 +52,12 @@ class HomeActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        fab.setOnClickListener { _ ->
+            navController.navigate(R.id.nav_cart)
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -63,7 +65,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_home,
                 R.id.nav_menu,
                 R.id.nav_food_detail,
-                R.id.nav_tools,
+                R.id.nav_cart,
                 R.id.nav_send
             ), drawerLayout
         )
@@ -114,6 +116,15 @@ class HomeActivity : AppCompatActivity() {
     fun onCountCartEvent(event: CountCartEvent){
         if(event.isSuccess){
             countCartItem()
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun onHideFABEvent(event: HideFABCart){
+        if(event.isHide){
+            fab.hide()
+        } else {
+            fab.show()
         }
     }
 

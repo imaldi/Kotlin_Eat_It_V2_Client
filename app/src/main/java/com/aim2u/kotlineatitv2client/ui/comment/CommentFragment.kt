@@ -50,7 +50,7 @@ class CommentFragment : BottomSheetDialogFragment(),
         initViews(itemView)
         loadCommentFromFirebase()
         commentViewModel!!.mutableLiveDataCommentList.observe(this, Observer {
-            adapter = MyCommentAdapter(requireContext(),it)
+            adapter = MyCommentAdapter(it)
             recycler_comment!!.adapter = adapter
         })
         return itemView

@@ -21,7 +21,7 @@ class MyBestDealAdapter (context: Context,
 
     override fun bindView(convertView: View?, listPosition: Int, viewType: Int) {
         val imageView = convertView!!.findViewById<ImageView>(R.id.img_best_deal)
-        val textView = convertView!!.findViewById<TextView>(R.id.txt_best_deal)
+        val textView = convertView.findViewById<TextView>(R.id.txt_best_deal)
         //Get data
         Glide.with(context).load(itemList[listPosition].image).into(imageView)
         textView.text = itemList[listPosition].name

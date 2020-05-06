@@ -143,7 +143,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
                                 waitingDialog!!.dismiss()
                                 if(task.isSuccessful){
                                     Common.foodSelected = foodModel
-                                    foodDetailViewModel!!.setFoodModel(foodModel)
+                                    foodDetailViewModel.setFoodModel(foodModel)
                                     Toast.makeText(context!!,""+"Thank You",Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -155,16 +155,16 @@ class FoodDetailFragment : Fragment(), TextWatcher {
 
     private fun displayInfo(it: FoodModel?) {
         Glide.with(context!!).load(it!!.image).into(img_food!!)
-        food_name!!.text = StringBuilder(it!!.name!!)
-        food_description!!.text = StringBuilder(it!!.description!!)
-        food_price!!.text = StringBuilder(it!!.price!!.toString())
+        food_name!!.text = StringBuilder(it.name!!)
+        food_description!!.text = StringBuilder(it.description!!)
+        food_price!!.text = StringBuilder(it.price.toString())
 
-        ratingBar!!.rating = it!!.ratingValue.toFloat()
+        ratingBar!!.rating = it.ratingValue.toFloat()
 
         //set Size
-        for(sizeModel in it!!.size!!){
+        for(sizeModel in it.size!!){
             val radioButton = RadioButton(context)
-            radioButton.setOnCheckedChangeListener{compoundButton, b ->
+            radioButton.setOnCheckedChangeListener{_, b ->
                 if(b)
                     Common.foodSelected!!.userSelectedSize = sizeModel
                 calculateTotalPrice()
@@ -186,7 +186,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
     }
 
     private fun calculateTotalPrice() {
-        var totalPrice = Common.foodSelected!!.userSelectedSize!!.price!!.toDouble()
+        var totalPrice = Common.foodSelected!!.userSelectedSize!!.price.toDouble()
         var displayPrice = 0.0
 
         //Addon (pt12)
@@ -196,7 +196,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         }
 
         //Size
-        totalPrice += Common.foodSelected!!.userSelectedSize!!.price!!.toDouble()
+        totalPrice += Common.foodSelected!!.userSelectedSize!!.price.toDouble()
 
         displayPrice = totalPrice * number_button!!.number.toInt()
         displayPrice = Math.round(displayPrice * 100.0)/100.0
@@ -216,7 +216,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         edt_search_addon = layout_user_selected_addon.findViewById(R.id.edt_search) as EditText
         addOnBottomSheetDialog.setContentView(layout_user_selected_addon)
 
-        addOnBottomSheetDialog.setOnDismissListener { dialogInterface ->
+        addOnBottomSheetDialog.setOnDismissListener { _->
             displayUserSelectedAddon()
             calculateTotalPrice()
         }
@@ -224,17 +224,17 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         waitingDialog = SpotsDialog.Builder().setContext(context)
             .setCancelable(false).build()
         btnCart = root!!.findViewById(R.id.btnCart) as CounterFab
-        img_food = root!!.findViewById(R.id.img_food) as ImageView
-        btnRating = root!!.findViewById(R.id.btn_rating) as FloatingActionButton
-        food_name = root!!.findViewById(R.id.food_name) as TextView
-        food_description = root!!.findViewById(R.id.food_description) as TextView
-        food_price = root!!.findViewById(R.id.food_price) as TextView
-        number_button = root!!.findViewById(R.id.number_button) as ElegantNumberButton
-        ratingBar = root!!.findViewById(R.id.ratingBar) as RatingBar
-        btnShowComment = root!!.findViewById(R.id.btnShowComment) as Button
-        rdi_group_size = root!!.findViewById(R.id.rdi_group_size) as RadioGroup
-        img_add_on = root!!.findViewById(R.id.img_add_addon) as ImageView
-        chip_group_user_selected_addon = root!!.findViewById(R.id.chip_group_user_selected_addon)as ChipGroup
+        img_food = root.findViewById(R.id.img_food) as ImageView
+        btnRating = root.findViewById(R.id.btn_rating) as FloatingActionButton
+        food_name = root.findViewById(R.id.food_name) as TextView
+        food_description = root.findViewById(R.id.food_description) as TextView
+        food_price = root.findViewById(R.id.food_price) as TextView
+        number_button = root.findViewById(R.id.number_button) as ElegantNumberButton
+        ratingBar = root.findViewById(R.id.ratingBar) as RatingBar
+        btnShowComment = root.findViewById(R.id.btnShowComment) as Button
+        rdi_group_size = root.findViewById(R.id.rdi_group_size) as RadioGroup
+        img_add_on = root.findViewById(R.id.img_add_addon) as ImageView
+        chip_group_user_selected_addon = root.findViewById(R.id.chip_group_user_selected_addon)as ChipGroup
 
         //Event (pt12)
 
@@ -260,8 +260,8 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         btnCart?.setOnClickListener{
             val cartItem = CartItem()
 
-            cartItem?.uid = Common.currentUser?.uid
-            cartItem?.userPhone = Common.currentUser?.phone
+            cartItem.uid = Common.currentUser?.uid
+            cartItem.userPhone = Common.currentUser?.phone
 
             cartItem.foodId = Common.foodSelected?.id!!
             cartItem.foodName = Common.foodSelected?.name!!
@@ -369,7 +369,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
             for(addOnModel in Common.foodSelected!!.addon!!){
                 val chip = layoutInflater.inflate(R.layout.layout_chip,null,false)as Chip
                 chip.text = StringBuilder(addOnModel.name!!).append("(+$").append(addOnModel.price).append(")").toString()
-                chip.setOnCheckedChangeListener { compoundButton, b ->
+                chip.setOnCheckedChangeListener { _, b ->
                     if(b){
                         if(Common.foodSelected!!.userSelectedAddon == null)
                             Common.foodSelected!!.userSelectedAddon = ArrayList()
@@ -386,7 +386,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
             chip_group_user_selected_addon!!.removeAllViews()
             for (addonModel in Common.foodSelected!!.userSelectedAddon!!){
                 val chip = layoutInflater.inflate(R.layout.layout_chip_with_delete,null,false) as Chip
-                chip.text = StringBuilder(addonModel!!.name!!).append("$+").append(addonModel.price).append(")").toString()
+                chip.text = StringBuilder(addonModel.name!!).append("$+").append(addonModel.price).append(")").toString()
                 chip.isClickable = false
                 chip.setOnCloseIconClickListener { view ->
                     chip_group_user_selected_addon!!.removeView(view)
@@ -410,8 +410,8 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         val edt_comment = itemView.findViewById<EditText>(R.id.edt_comment)
 
         builder.setView(itemView)
-        builder.setNegativeButton("CANCEL"){dialogInterface, i -> dialogInterface.dismiss() }
-        builder.setPositiveButton("OK"){dialogInterface, i ->
+        builder.setNegativeButton("CANCEL"){dialogInterface, _ -> dialogInterface.dismiss() }
+        builder.setPositiveButton("OK"){_, i ->
             val commentModel = CommentModel()
             commentModel.name = Common.currentUser!!.name
             commentModel.uid = Common.currentUser!!.uid
@@ -443,7 +443,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
             if (addOnModel.name!!.toLowerCase().contains(charSequence.toString().toLowerCase())){
                     val chip = layoutInflater.inflate(R.layout.layout_chip,null,false)as Chip
                     chip.text = StringBuilder(addOnModel.name!!).append("(+$").append(addOnModel.price).append(")").toString()
-                    chip.setOnCheckedChangeListener { compoundButton, b ->
+                    chip.setOnCheckedChangeListener { _, b ->
                         if(b){
                             if(Common.foodSelected!!.userSelectedAddon == null)
                                 Common.foodSelected!!.userSelectedAddon = ArrayList()

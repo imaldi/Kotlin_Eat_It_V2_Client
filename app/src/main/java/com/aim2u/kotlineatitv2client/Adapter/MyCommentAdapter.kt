@@ -15,11 +15,10 @@ import com.aim2u.kotlineatitv2client.Model.CommentModel
 import com.aim2u.kotlineatitv2client.R
 import kotlinx.android.synthetic.main.layout_comment_item.view.*
 
-class MyCommentAdapter(internal var context: Context,
-                       internal var commentList: List<CommentModel>):RecyclerView.Adapter<MyCommentAdapter.MyViewHolder>() {
+class MyCommentAdapter(internal var commentList: List<CommentModel>):RecyclerView.Adapter<MyCommentAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_comment_item,parent,false))
+        return MyViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_comment_item,parent,false))
     }
 
     override fun getItemCount(): Int = commentList.size

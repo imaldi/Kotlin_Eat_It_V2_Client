@@ -49,10 +49,10 @@ class MenuViewModel : ViewModel(),
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                for (itemSnapShot in p0!!.children){
+                for (itemSnapShot in p0.children){
                     val model = itemSnapShot.getValue<CategoryModel>(CategoryModel::class.java)
                     model!!.menu_id= itemSnapShot.key
-                    tempList.add(model!!)
+                    tempList.add(model)
                 }
 
                 categoryCallbackListener.onCategoryLoadSuccess(tempList)

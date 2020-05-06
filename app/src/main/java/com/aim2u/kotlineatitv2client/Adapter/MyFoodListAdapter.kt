@@ -99,13 +99,13 @@ class MyFoodListAdapter (internal var context: Context,
         holder.img_food_cart!!.setOnClickListener {
             val cartItem = CartItem()
 
-            cartItem?.uid = Common.currentUser?.uid
-            cartItem?.userPhone = Common.currentUser?.phone
+            cartItem.uid = Common.currentUser?.uid
+            cartItem.userPhone = Common.currentUser?.phone
 
             cartItem.foodId = foodList.get(position).id!!
             cartItem.foodName = foodList.get(position).name!!
             cartItem.foodImage = foodList.get(position).image!!
-            cartItem.foodPrice = foodList.get(position).price!!.toDouble()
+            cartItem.foodPrice = foodList.get(position).price.toDouble()
             cartItem.foodQuantity = 1
             cartItem.foodExtraPrice = 0.0
             cartItem.foodAddon = "Default"
@@ -191,7 +191,7 @@ class MyFoodListAdapter (internal var context: Context,
     }
 
     fun onStop(){
-        if(compositeDisposable != null)
+        //if(compositeDisposable != null)
             compositeDisposable.clear()
     }
 

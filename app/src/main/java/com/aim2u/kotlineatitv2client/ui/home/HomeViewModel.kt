@@ -49,7 +49,7 @@ class HomeViewModel : ViewModel(), IPopularLoadCallback, IBestDealLoadCallback {
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                for (itemSnapShot in p0!!.children){
+                for (itemSnapShot in p0.children){
                     val model = itemSnapShot.getValue<BestDealModel>(BestDealModel::class.java)
                     tempList.add(model!!)
                 }
@@ -70,7 +70,7 @@ class HomeViewModel : ViewModel(), IPopularLoadCallback, IBestDealLoadCallback {
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                for (itemSnapShot in p0!!.children){
+                for (itemSnapShot in p0.children){
                     val model = itemSnapShot.getValue<PopularCategoryModel>(PopularCategoryModel::class.java)
                     tempList.add(model!!)
                 }
