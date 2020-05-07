@@ -1,5 +1,6 @@
 package com.aim2u.kotlineatitv2client
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -13,6 +14,8 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.NavController
 import com.aim2u.kotlineatitv2client.Database.CartDataSource
@@ -31,13 +34,16 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.EventBus.HideFABCart
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.app_bar_home.*
+import kotlinx.android.synthetic.main.nav_header_home.*
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var cartDataSource: CartDataSource
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController:NavController
+    private var drawerLayout: DrawerLayout?=null
 
     override fun onResume() {
         super.onResume()
@@ -55,7 +61,7 @@ class HomeActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
             navController.navigate(R.id.nav_cart)
         }
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
@@ -65,14 +71,56 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_home,
                 R.id.nav_menu,
                 R.id.nav_food_detail,
-                R.id.nav_cart,
-                R.id.nav_send
+                R.id.nav_cart
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        var headerView = navView.getHeaderView(0)
+        var txtUser = headerView.findViewById<TextView>(R.id.txt_user)
+        Common.setSpanString("Hey, ",Common.currentUser!!.name,txtUser)
+
+        navView.setNavigationItemSelectedListener(object :NavigationView.OnNavigationItemSelectedListener{
+            override fun onNavigationItemSelected(item: MenuItem): Boolean {
+                item.isChecked = true
+                drawerLayout!!.closeDrawers()
+                if(item.itemId == R.id.nav_sign_out){
+                    Toast.makeText(this@HomeActivity,"OK TEST",Toast.LENGTH_SHORT).show()
+                    signOut()
+                } else if(item.itemId == R.id.nav_home){
+                    navController.navigate(R.id.nav_home)
+                } else if(item.itemId == R.id.nav_cart){
+                    navController.navigate(R.id.nav_cart)
+                } else if(item.itemId == R.id.nav_menu){
+                    navController.navigate(R.id.nav_menu)
+                }
+                return true
+            }
+
+        })
+
         countCartItem()
+    }
+
+    private fun signOut() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Sign Out")
+            .setMessage("Do you really want to Exit?")
+            .setNegativeButton("CANCEL",{dialogInterface, _ -> dialogInterface.dismiss() })
+            .setPositiveButton("OK"){dialogInterface, _ ->
+                Common.foodSelected = null
+                Common.categorySelected = null
+                Common.currentUser = null
+                FirebaseAuth.getInstance().signOut()
+
+                val intent = Intent(this@HomeActivity,MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

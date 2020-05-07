@@ -24,4 +24,5 @@
     <string name="example">Example</string>
     <string name="empty_cart">EMPTY CART</string>
     <string name="place_order">Place Order</string>
+    <string name="sign_out">Sign Out</string>
 </resources>
