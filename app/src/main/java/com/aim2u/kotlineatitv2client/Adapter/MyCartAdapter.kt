@@ -60,4 +60,7 @@ class MyCartAdapter (internal val context : Context,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) = holder.bind(cartItems[position])
+    fun getItemAtPosition(pos: Int): CartItem {
+        return cartItems[pos]
+    }
 }
