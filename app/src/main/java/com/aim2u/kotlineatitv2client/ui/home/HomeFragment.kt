@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aim2u.kotlineatitv2client.Adapter.MyBestDealAdapter
-import com.aim2u.kotlineatitv2client.EventBus.MyPopularCategoriesAdapter
+import com.aim2u.kotlineatitv2client.Adapter.MyPopularCategoriesAdapter
 import com.aim2u.kotlineatitv2client.R
 import com.asksira.loopingviewpager.LoopingViewPager
 

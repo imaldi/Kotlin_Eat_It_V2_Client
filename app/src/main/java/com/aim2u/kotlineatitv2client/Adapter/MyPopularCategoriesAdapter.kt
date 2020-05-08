@@ -1,4 +1,4 @@
-package com.aim2u.kotlineatitv2client.EventBus
+package com.aim2u.kotlineatitv2client.Adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.aim2u.kotlineatitv2client.Adapter.PopularFoodItemClick
 import com.aim2u.kotlineatitv2client.Callback.IRecyclerItemClickListener
 import com.aim2u.kotlineatitv2client.Model.PopularCategoryModel
 import com.aim2u.kotlineatitv2client.R
