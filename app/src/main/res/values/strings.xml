@@ -26,4 +26,12 @@
     <string name="place_order">Place Order</string>
     <string name="sign_out">Sign Out</string>
     <string name="action_clear_cart">Clear Cart</string>
+    <string name="delivery_method">Delivery Method</string>
+    <string name="home_address">Home Address</string>
+    <string name="ship_to_this_address">Ship to this address</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="cod">Cash On Delivery</string>
+    <string name="braintree">Braintree</string>
+    <string name="other_address">Other Address</string>
+    <string name="enter_your_address">Enter your address</string>
 </resources>

@@ -10,6 +10,7 @@ import com.aim2u.kotlineatitv2client.Model.BestDealModel
 import com.aim2u.kotlineatitv2client.R
 import com.asksira.loopingviewpager.LoopingPagerAdapter
 import com.bumptech.glide.Glide
+import org.greenrobot.eventbus.EventBus
 
 class MyBestDealAdapter (context: Context,
                             itemList:List<BestDealModel>,
@@ -25,6 +26,10 @@ class MyBestDealAdapter (context: Context,
         //Get data
         Glide.with(context).load(itemList[listPosition].image).into(imageView)
         textView.text = itemList[listPosition].name
+
+        convertView.setOnClickListener{
+            EventBus.getDefault().postSticky(BestDealItemClick(itemList[listPosition]))
+        }
     }
 
 }

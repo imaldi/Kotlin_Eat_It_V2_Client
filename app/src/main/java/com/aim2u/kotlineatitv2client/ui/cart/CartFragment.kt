@@ -1,9 +1,12 @@
 package com.aim2u.kotlineatitv2client.ui.cart
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.*
+import android.widget.EditText
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -28,6 +31,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_cart.*
+import kotlinx.android.synthetic.main.layout_place_order.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -106,7 +110,7 @@ class CartFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        cartViewModel!!.onStop()
+        cartViewModel.onStop()
         compositeDisposable.clear()
         EventBus.getDefault().postSticky(HideFABCart(false))
         if (EventBus.getDefault().isRegistered(this))
@@ -144,7 +148,7 @@ class CartFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : SingleObserver<Double>{
                 override fun onSuccess(t: Double) {
-                    txt_total_price.text = StringBuilder("Total: ")
+                    txt_total_price.text = StringBuilder("Total: $")
                         .append(Common.formatPrice(t))
                 }
 
@@ -199,6 +203,47 @@ class CartFragment : Fragment() {
                 }))
             }
         }
+
+        btn_place_order.setOnClickListener{
+            val builder = AlertDialog.Builder(context!!)
+            builder.setTitle("One more step!")
+
+            val view = LayoutInflater.from(context).inflate(R.layout.layout_place_order,null)
+
+            val edtAddress = view.findViewById<View>(R.id.edt_address) as EditText
+            val rdiHome = view.findViewById<View>(R.id.rdi_home_address) as RadioButton
+            val rdiOtherAddress = view.findViewById<View>(R.id.rdi_other_address) as RadioButton
+            val rdiShipThis = view.findViewById<View>(R.id.rdi_ship_this_address) as RadioButton
+            val rdiCOD = view.findViewById<View>(R.id.rdi_cod) as RadioButton
+            val rdiBraintree = view.findViewById<View>(R.id.rdi_braintree) as RadioButton
+            //Data
+            edtAddress.setText(Common.currentUser!!.address!!)
+
+            //Event
+            rdiHome.setOnCheckedChangeListener { _, b ->
+                if(b){
+                    edtAddress.setText(Common.currentUser!!.address!!)
+                }
+            }
+            rdiOtherAddress.setOnCheckedChangeListener { _, b ->
+                if(b){
+                    edtAddress.setText("")
+                    edtAddress.setHint("Enter your address")
+                }
+            }
+            rdiShipThis.setOnCheckedChangeListener { _, b ->
+                if(b){
+                    Toast.makeText(context!!, "Implement late with Google API",Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            builder.setView(view)
+            builder.setNegativeButton("NO",{dialogInterface, _ -> dialogInterface.dismiss() })
+                .setPositiveButton("YES",{_, _ -> Toast.makeText(context!!,"Implement Late",Toast.LENGTH_SHORT).show()  })
+
+            val dialog = builder.create()
+            dialog.show()
+        }
     }
 
     private fun sumCart() {
@@ -223,7 +268,7 @@ class CartFragment : Fragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu!!.findItem(R.id.action_settings).setVisible(false) // hide setting menu while in cart
+        menu.findItem(R.id.action_settings).setVisible(false) // hide setting menu while in cart
         super.onPrepareOptionsMenu(menu)
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -232,7 +277,7 @@ class CartFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item!!.itemId == R.id.action_clear_cart) {
+        if(item.itemId == R.id.action_clear_cart) {
             cartDataSource!!.cleanCart(Common.currentUser!!.uid!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

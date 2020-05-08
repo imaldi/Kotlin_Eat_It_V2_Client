@@ -411,7 +411,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
 
         builder.setView(itemView)
         builder.setNegativeButton("CANCEL"){dialogInterface, _ -> dialogInterface.dismiss() }
-        builder.setPositiveButton("OK"){_, i ->
+        builder.setPositiveButton("OK"){_, _ ->
             val commentModel = CommentModel()
             commentModel.name = Common.currentUser!!.name
             commentModel.uid = Common.currentUser!!.uid
