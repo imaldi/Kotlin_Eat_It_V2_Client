@@ -19,6 +19,12 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import dmax.dialog.SpotsDialog
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
@@ -67,18 +73,33 @@ class MainActivity : AppCompatActivity() {
         dialog = SpotsDialog.Builder().setContext(this).setCancelable(false).build()
         cloudFunctions = RetrofitCloudClient.getInstance().create(ICloudFunctions::class.java)
         listener = FirebaseAuth.AuthStateListener {firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if(user != null){
-                //Already Login
-//                Toast.makeText(this@MainActivity,"Already login",Toast.LENGTH_SHORT).show()
 
-                checkUserFromFirebase(user)
-            }else{
-                //Not Login
-                //val accessToken =
-                phoneLogin()
-            }
+            Dexter.withActivity(this@MainActivity)
+                .withPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(object : PermissionListener{
+                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+                        val user = firebaseAuth.currentUser
+                        if(user != null){
+                            //Already Login
+                            checkUserFromFirebase(user)
+                        }else{
+                            //Not Login
+                            //val accessToken =
+                            phoneLogin()
+                        }
+                    }
 
+                    override fun onPermissionRationaleShouldBeShown(
+                        permission: PermissionRequest?,
+                        token: PermissionToken?
+                    ) {
+
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                        Toast.makeText(this@MainActivity,"You must accept this permission to use app",Toast.LENGTH_SHORT).show()
+                    }
+                }).check()
         }
 
     }

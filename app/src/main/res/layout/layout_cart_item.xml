@@ -62,9 +62,6 @@
                 app:initialNumber="1"
                 app:textColor="@android:color/white"
                 app:textSize="8sp" />
-            <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

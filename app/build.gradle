@@ -89,5 +89,9 @@ dependencies {
     //pt14 CounterFab
     implementation 'com.github.andremion:counterfab:1.2.2-alpha1'
 
+    //pt21 Getting User Location
+    implementation 'com.karumi:dexter:5.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
 
 }

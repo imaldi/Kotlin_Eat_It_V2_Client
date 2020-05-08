@@ -21,6 +21,31 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+        android:id="@+id/txt_address_detail"
+        android:text="Delivery Method"
+        android:visibility="gone"
+        android:fontFamily="@font/brandon_medium"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:fontFamily="@font/brandon_medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edt_comment"
+            android:text=""
+            android:hint="@string/enter_comment"
+            android:fontFamily="@font/brandon_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
         android:text="@string/delivery_method"
         android:fontFamily="@font/brandon_medium"
         android:textSize="22sp"

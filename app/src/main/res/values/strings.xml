@@ -34,4 +34,5 @@
     <string name="braintree">Braintree</string>
     <string name="other_address">Other Address</string>
     <string name="enter_your_address">Enter your address</string>
+    <string name="enter_comment">Enter Comment</string>
 </resources>
