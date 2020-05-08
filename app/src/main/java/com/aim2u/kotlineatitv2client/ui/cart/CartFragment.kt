@@ -2,6 +2,7 @@ package com.aim2u.kotlineatitv2client.ui.cart
 
 import android.app.AlertDialog
 import android.graphics.Color
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -29,17 +30,22 @@ import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.Common.MySwipeHelper
 import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
 import com.google.android.gms.location.*
+import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_cart.*
 import kotlinx.android.synthetic.main.layout_place_order.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.IOException
 import java.lang.StringBuilder
+import java.util.*
 
 class CartFragment : Fragment() {
 
@@ -275,7 +281,9 @@ class CartFragment : Fragment() {
             rdiShipThis.setOnCheckedChangeListener { _, b ->
                 if(b){
                     fusedLocationProviderClient!!.lastLocation
-                        .addOnFailureListener{e -> Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()}
+                        .addOnFailureListener{e ->
+                            txtAddress.visibility = View.GONE
+                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()}
                         .addOnCompleteListener{task ->
                             val coordinates = StringBuilder()
                                 .append(task.result!!.latitude)
@@ -283,7 +291,22 @@ class CartFragment : Fragment() {
                                 .append(task.result!!.longitude)
                                 .toString()
 
-                            edtAddress.setText(coordinates)
+                            val singleAddress = Single.just(getAddressFromLatLng(task.result!!.latitude,task.result!!.longitude))
+
+                            val disposable = singleAddress.subscribeWith(object : DisposableSingleObserver<String>(){
+                                override fun onSuccess(t: String) {
+                                    edtAddress.setText(coordinates)
+                                    txtAddress.visibility = View.VISIBLE
+                                    txtAddress.setText(t)
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    edtAddress.setText(coordinates)
+                                    txtAddress.visibility = View.VISIBLE
+                                    txtAddress.setText("Implement Late with google API")
+                                }
+                            })
+
                         }
                 }
             }
@@ -295,6 +318,26 @@ class CartFragment : Fragment() {
             val dialog = builder.create()
             dialog.show()
         }
+    }
+
+    private fun getAddressFromLatLng(latitude: Double, longitude: Double): String{
+        val geocoder = Geocoder(context!!, Locale.getDefault())
+        var result:String? = null
+
+        try {
+            val addressList = geocoder.getFromLocation(latitude,longitude,1)
+            if(addressList != null && addressList.size >0){
+                val address = addressList[0]
+                val sb = StringBuilder(address.getAddressLine(0))
+                result = sb.toString()
+            } else{
+                result = "Address not found!"
+            }
+            return  result
+        } catch (e:IOException){
+            return e.message!!
+        }
+
     }
 
     private fun sumCart() {
