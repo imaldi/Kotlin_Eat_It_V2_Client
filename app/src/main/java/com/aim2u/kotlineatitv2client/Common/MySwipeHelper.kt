@@ -23,7 +23,7 @@ abstract class MySwipeHelper (context:Context,
                               internal var buttonWidth:Int):ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
     private var buttonList:MutableList<MyButton>?=null
     private lateinit var gestureDetector:GestureDetector
-    private var swipePosition = 1
+    private var swipePosition = -1
     private var swipeThreshold = 0.5f
     private val buttonBuffer:MutableMap<Int,MutableList<MyButton>>
     private lateinit var removerQueue: Queue<Int>
