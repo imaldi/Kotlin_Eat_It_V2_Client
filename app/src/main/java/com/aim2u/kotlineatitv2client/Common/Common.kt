@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.aim2u.kotlineatitv2client.Model.*
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.random.Random
 
 object Common{
     fun formatPrice(price: Double): String {
@@ -54,6 +55,14 @@ object Common{
         txtUser!!.setText(builder,TextView.BufferType.SPANNABLE)
     }
 
+    fun createOrderNumber(): String {
+        return StringBuilder()
+            .append(System.currentTimeMillis())
+            .append(Math.abs(Random.nextInt()))
+            .toString()
+    }
+
+    val ORDER_REF: String = "Order"
     val COMMENT_REF: String = "Comments"
     var foodSelected: FoodModel?=null
     var categorySelected: CategoryModel?=null

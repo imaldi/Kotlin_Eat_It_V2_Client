@@ -29,17 +29,17 @@ import com.aim2u.kotlineatitv2client.R
 import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.Common.MySwipeHelper
 import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
+import com.aim2u.kotlineatitv2client.Model.Order
 import com.google.android.gms.location.*
+import com.google.firebase.database.FirebaseDatabase
 import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_cart.*
-import kotlinx.android.synthetic.main.layout_place_order.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -313,11 +313,91 @@ class CartFragment : Fragment() {
 
             builder.setView(view)
             builder.setNegativeButton("NO",{dialogInterface, _ -> dialogInterface.dismiss() })
-                .setPositiveButton("YES",{_, _ -> Toast.makeText(context!!,"Implement Late",Toast.LENGTH_SHORT).show()  })
+                .setPositiveButton("YES",{_, _ ->
+                    if(rdiCOD.isChecked)
+                        paymentCOD(edtAddress.text.toString(),edtComment.text.toString())
+                })
 
             val dialog = builder.create()
             dialog.show()
         }
+    }
+
+    private fun paymentCOD(address: String, comment: String) {
+        compositeDisposable.add(cartDataSource!!.getAllCart(Common.currentUser!!.uid!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({cartItemList ->
+                //When we have all cartItems, we will get total price
+                cartDataSource!!.sumPrice(Common.currentUser!!.uid!!)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object : SingleObserver<Double>{
+                        override fun onSuccess(totalPrice: Double) {
+                            val finalPrice = totalPrice
+                            val order = Order()
+                            order.userId = Common.currentUser!!.uid
+                            order.userName = Common.currentUser!!.name
+                            order.userPhone = Common.currentUser!!.phone
+                            order.shippingAddress = address
+                            order.comment = comment
+
+//                            if (currentLocation != null)
+//                            {
+                                order.lat = currentLocation.latitude
+                                order.lng = currentLocation.longitude
+//                            }
+
+                            order.cartItemList = cartItemList
+                            order.totalPayment = totalPrice
+                            order.finalPayment = finalPrice
+                            order.discount = 0
+                            order.isCod = true
+                            order.transactionId = "Cash On Delivery"
+
+                            //Submit to firebase
+                            writeOrderToFirebase(order)
+                        }
+
+                        override fun onSubscribe(d: Disposable) {
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()
+                        }
+                    })
+            },{throwable ->
+                Toast.makeText(context!!, ""+throwable.message,Toast.LENGTH_SHORT).show()
+            }))
+    }
+
+    private fun writeOrderToFirebase(order: Order) {
+        FirebaseDatabase.getInstance()
+            .getReference(Common.ORDER_REF)
+            .child(Common.createOrderNumber())
+            .setValue(order)
+            .addOnFailureListener {e ->
+                Toast.makeText(context!!,""+e.message, Toast.LENGTH_SHORT).show()
+            }
+            .addOnCompleteListener { task ->
+                cartDataSource!!.cleanCart(Common.currentUser!!.uid!!)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object :SingleObserver<Int>{
+                        override fun onSuccess(t: Int) {
+                            Toast.makeText(context!!, "Order placed successfuly",Toast.LENGTH_SHORT).show()
+                        }
+
+                        override fun onSubscribe(d: Disposable) {
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()
+                        }
+                    })
+            }
     }
 
     private fun getAddressFromLatLng(latitude: Double, longitude: Double): String{
