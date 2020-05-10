@@ -7,6 +7,7 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.os.Parcelable
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.RadioButton
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aim2u.kotlineatitv2client.Adapter.MyCartAdapter
+import com.aim2u.kotlineatitv2client.Callback.ILoadTimeFromFirebaseCallback
 import com.aim2u.kotlineatitv2client.Callback.IMyButtonCallback
 import com.aim2u.kotlineatitv2client.Database.CartDataSource
 import com.aim2u.kotlineatitv2client.Database.CartDatabase
@@ -31,7 +33,10 @@ import com.aim2u.kotlineatitv2client.Common.MySwipeHelper
 import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
 import com.aim2u.kotlineatitv2client.Model.Order
 import com.google.android.gms.location.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,9 +50,10 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.IOException
 import java.lang.StringBuilder
+import java.text.SimpleDateFormat
 import java.util.*
 
-class CartFragment : Fragment() {
+class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
 
     private var cartDataSource:CartDataSource?=null
     private var compositeDisposable:CompositeDisposable = CompositeDisposable()
@@ -60,6 +66,9 @@ class CartFragment : Fragment() {
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var currentLocation: Location
+
+
+    lateinit var listener:ILoadTimeFromFirebaseCallback
     override fun onResume() {
         super.onResume()
         calculateTotalPrice()
@@ -136,6 +145,8 @@ class CartFragment : Fragment() {
 
         setHasOptionsMenu(true)//Important to inflate menu
 
+
+        listener = this
         cartDataSource = LocalCartDataSource(CartDatabase.getInstance(context!!).cartDao())
         recyclerCart = root!!.findViewById(R.id.recycler_cart) as RecyclerView
         recyclerCart!!.setHasFixedSize(true)
@@ -356,7 +367,8 @@ class CartFragment : Fragment() {
                             order.transactionId = "Cash On Delivery"
 
                             //Submit to firebase
-                            writeOrderToFirebase(order)
+//                            writeOrderToFirebase(order)
+                            syncLocalTimeWithServerTime(order)
                         }
 
                         override fun onSubscribe(d: Disposable) {
@@ -370,6 +382,25 @@ class CartFragment : Fragment() {
             },{throwable ->
                 Toast.makeText(context!!, ""+throwable.message,Toast.LENGTH_SHORT).show()
             }))
+    }
+
+    private fun syncLocalTimeWithServerTime(order: Order) {
+        var offsetRef = FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset")
+        offsetRef.addListenerForSingleValueEvent(object :  ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                listener.onLoadTimeFailed(p0.message)
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val offset = p0.getValue(Long::class.java)
+                val estimatedServerTimeInMs = System.currentTimeMillis()+offset!! //Add missing offset to your current time
+                val sdf = SimpleDateFormat("MMM dd yyyy, HH:mm")
+                val date = Date(estimatedServerTimeInMs)
+                Log.d("EDMT_DEV",""+sdf.format(date))
+                listener.onLoadTimeSuccess(order,estimatedServerTimeInMs)
+            }
+
+        })
     }
 
     private fun writeOrderToFirebase(order: Order) {
@@ -473,5 +504,14 @@ class CartFragment : Fragment() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onLoadTimeSuccess(order: Order, estimatedTimeMs: Long) {
+        order.createDate = estimatedTimeMs
+        writeOrderToFirebase(order)
+    }
+
+    override fun onLoadTimeFailed(message: String) {
+        Toast.makeText(context!!,message,Toast.LENGTH_SHORT).show()
     }
 }
