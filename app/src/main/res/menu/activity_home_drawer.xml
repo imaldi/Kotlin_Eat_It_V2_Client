@@ -30,4 +30,11 @@
             android:title="@string/sign_out" />
     </group>
 
+    <group android:id="@+id/view_order_group">
+        <item
+            android:id="@+id/nav_view_order"
+            android:icon="@drawable/ic_view_headline_black_24dp"
+            android:title="@string/menu_view_orders" />
+    </group>
+
 </menu>

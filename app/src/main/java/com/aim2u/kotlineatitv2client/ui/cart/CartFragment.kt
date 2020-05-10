@@ -508,6 +508,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
 
     override fun onLoadTimeSuccess(order: Order, estimatedTimeMs: Long) {
         order.createDate = estimatedTimeMs
+        order.orderStatus = 0
         writeOrderToFirebase(order)
     }
 
