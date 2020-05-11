@@ -17,6 +17,7 @@ import com.aim2u.kotlineatitv2client.Database.CartDatabase
 import com.aim2u.kotlineatitv2client.Database.CartItem
 import com.aim2u.kotlineatitv2client.Database.LocalCartDataSource
 import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
+import com.aim2u.kotlineatitv2client.EventBus.MenuItemBack
 import com.aim2u.kotlineatitv2client.Model.CommentModel
 import com.aim2u.kotlineatitv2client.Model.FoodModel
 import com.aim2u.kotlineatitv2client.R
@@ -78,11 +79,11 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         val root = inflater.inflate(R.layout.fragment_food_detail, container, false)
 
         initViews(root)
-        foodDetailViewModel.getMutableLiveDataFood().observe(this, Observer {
+        foodDetailViewModel.getMutableLiveDataFood().observe(viewLifecycleOwner, Observer {
             displayInfo(it)
         })
 
-        foodDetailViewModel.getMutableLiveDataComment().observe(this, Observer {
+        foodDetailViewModel.getMutableLiveDataComment().observe(viewLifecycleOwner, Observer {
             submitRatingToFirebase(it)
         })
         return root
@@ -154,7 +155,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
     }
 
     private fun displayInfo(it: FoodModel?) {
-        Glide.with(context!!).load(it!!.image).into(img_food!!)
+        Glide.with(requireContext()).load(it!!.image).into(img_food!!)
         food_name!!.text = StringBuilder(it.name!!)
         food_description!!.text = StringBuilder(it.description!!)
         food_price!!.text = StringBuilder(it.price.toString())
@@ -207,10 +208,10 @@ class FoodDetailFragment : Fragment(), TextWatcher {
     private fun initViews(root: View?) {
 
         //pt15
-        cartDataSource = LocalCartDataSource(CartDatabase.getInstance(context!!).cartDao())
+        cartDataSource = LocalCartDataSource(CartDatabase.getInstance(requireContext()).cartDao())
 
 
-        addOnBottomSheetDialog = BottomSheetDialog(context!!, R.style.DialogStyle)
+        addOnBottomSheetDialog = BottomSheetDialog(requireContext(), R.style.DialogStyle)
         val layout_user_selected_addon = layoutInflater.inflate(R.layout.layout_addon_display,null)
         chip_group_addon = layout_user_selected_addon.findViewById(R.id.chip_group_addon) as ChipGroup
         edt_search_addon = layout_user_selected_addon.findViewById(R.id.edt_search) as EditText
@@ -254,7 +255,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
         //Event (pt10)
         btnShowComment?.setOnClickListener{
             val commentFragment = CommentFragment.getInstance()
-            commentFragment.show(activity!!.supportFragmentManager,"CommentFragment")
+            commentFragment.show(requireActivity().supportFragmentManager,"CommentFragment")
         }
 
         btnCart?.setOnClickListener{
@@ -400,7 +401,7 @@ class FoodDetailFragment : Fragment(), TextWatcher {
     }
 
     private fun showDialogRating() {
-        var builder = AlertDialog.Builder(context!!)
+        var builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Rating Food")
         builder.setMessage("Please fill information")
 
@@ -455,5 +456,10 @@ class FoodDetailFragment : Fragment(), TextWatcher {
 
         }
 
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().postSticky(MenuItemBack())
+        super.onDestroy()
     }
 }

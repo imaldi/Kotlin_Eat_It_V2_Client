@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aim2u.kotlineatitv2client.Adapter.ILoadOrderCallbackListener
 import com.aim2u.kotlineatitv2client.Adapter.MyOrderAdapter
 import com.aim2u.kotlineatitv2client.Common.Common
+import com.aim2u.kotlineatitv2client.EventBus.MenuItemBack
 import com.aim2u.kotlineatitv2client.Model.Order
 import com.aim2u.kotlineatitv2client.R
 import com.google.firebase.database.DataSnapshot
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dmax.dialog.SpotsDialog
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,9 +45,9 @@ class ViewOrderFragment : Fragment(), ILoadOrderCallbackListener {
         initViews(root)
         loadOrderFromFirebase()
 
-        viewOrderModel!!.mutableLiveDataOrderList.observe(this, Observer {
+        viewOrderModel!!.mutableLiveDataOrderList.observe(viewLifecycleOwner, Observer {
             Collections.reverse(it)
-            val adapter = MyOrderAdapter(context!!,it!!)
+            val adapter = MyOrderAdapter(requireContext(),it!!)
             recycler_order.adapter = adapter
         })
 
@@ -80,13 +82,13 @@ class ViewOrderFragment : Fragment(), ILoadOrderCallbackListener {
 
         listener = this
 
-        dialog = SpotsDialog.Builder().setContext(context!!).setCancelable(false).build()
+        dialog = SpotsDialog.Builder().setContext(requireContext()).setCancelable(false).build()
 
         recycler_order = root!!.findViewById(R.id.recycler_order) as RecyclerView
         recycler_order.setHasFixedSize(true)
-        val layoutManager = LinearLayoutManager(context!!)
+        val layoutManager = LinearLayoutManager(requireContext())
         recycler_order.layoutManager = layoutManager
-        recycler_order.addItemDecoration(DividerItemDecoration(context!!,layoutManager.orientation))
+        recycler_order.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
     }
 
     override fun onLoadOrderSuccess(orderList: List<Order>) {
@@ -97,7 +99,11 @@ class ViewOrderFragment : Fragment(), ILoadOrderCallbackListener {
 
     override fun onLoadOrderFailed(message: String) {
         dialog.dismiss()
-        Toast.makeText(context!!,message,Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),message,Toast.LENGTH_SHORT).show()
     }
 
+    override fun onDestroy() {
+        EventBus.getDefault().postSticky(MenuItemBack())
+        super.onDestroy()
+    }
 }

@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ import com.aim2u.kotlineatitv2client.R
 import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.Common.MySwipeHelper
 import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
+import com.aim2u.kotlineatitv2client.EventBus.MenuItemBack
 import com.aim2u.kotlineatitv2client.Model.Order
 import com.google.android.gms.location.*
 import com.google.firebase.database.DataSnapshot
@@ -88,14 +90,14 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
             )
         )
         cartViewModel =
-            ViewModelProviders.of(this).get(CartViewModel::class.java)
+            ViewModelProvider(this).get(CartViewModel::class.java)
 
-        cartViewModel.initCartDataSource(context!!)
+        cartViewModel.initCartDataSource(requireContext())
         val root = inflater.inflate(R.layout.fragment_cart, container, false)
         initViews(root)
         initLocation()
 
-        cartViewModel.getMutableLiveDataCartItem().observe(this, Observer {
+        cartViewModel.getMutableLiveDataCartItem().observe(viewLifecycleOwner, Observer {
             if (it == null || it.isEmpty()){
                 recycler_cart.visibility = View.GONE
                 group_place_holder.visibility = View.GONE
@@ -106,7 +108,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                 txt_empty_cart.visibility = View.GONE
             }
 
-            adapter = MyCartAdapter(context!!,it)
+            adapter = MyCartAdapter(requireContext(),it)
             recycler_cart!!.adapter = adapter
 
         })
@@ -120,7 +122,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
     private fun initLocation() {
         buildLocationRequest()
         buildLocationCallback()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context!!)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationProviderClient!!.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
     }
 
@@ -147,7 +149,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
 
 
         listener = this
-        cartDataSource = LocalCartDataSource(CartDatabase.getInstance(context!!).cartDao())
+        cartDataSource = LocalCartDataSource(CartDatabase.getInstance(requireContext()).cartDao())
         recyclerCart = root!!.findViewById(R.id.recycler_cart) as RecyclerView
         recyclerCart!!.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(context)
@@ -219,12 +221,12 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
 
             })
 
-        val swipe = object : MySwipeHelper(context!!,recyclerCart!!,200){
+        val swipe = object : MySwipeHelper(requireContext(),recyclerCart!!,200){
             override fun instantiateMyButton(
                 viewHolder: RecyclerView.ViewHolder,
                 buffer: MutableList<MyButton>
             ) {
-                buffer.add(MyButton(context!!,
+                buffer.add(MyButton(requireContext(),
                 "Delete",
                 30,
                 0,
@@ -261,7 +263,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
         }
 
         btn_place_order.setOnClickListener{
-            val builder = AlertDialog.Builder(context!!)
+            val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("One more step!")
 
             val view = LayoutInflater.from(context).inflate(R.layout.layout_place_order,null)
@@ -294,7 +296,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                     fusedLocationProviderClient!!.lastLocation
                         .addOnFailureListener{e ->
                             txtAddress.visibility = View.GONE
-                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()}
+                            Toast.makeText(requireContext(), ""+e.message,Toast.LENGTH_SHORT).show()}
                         .addOnCompleteListener{task ->
                             val coordinates = StringBuilder()
                                 .append(task.result!!.latitude)
@@ -314,7 +316,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                                 override fun onError(e: Throwable) {
                                     edtAddress.setText(coordinates)
                                     txtAddress.visibility = View.VISIBLE
-                                    txtAddress.setText("Implement Late with google API")
+                                    txtAddress.setText(e.message)
                                 }
                             })
 
@@ -376,11 +378,11 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                         }
 
                         override fun onError(e: Throwable) {
-                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), ""+e.message,Toast.LENGTH_SHORT).show()
                         }
                     })
             },{throwable ->
-                Toast.makeText(context!!, ""+throwable.message,Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), ""+throwable.message,Toast.LENGTH_SHORT).show()
             }))
     }
 
@@ -409,7 +411,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
             .child(Common.createOrderNumber())
             .setValue(order)
             .addOnFailureListener {e ->
-                Toast.makeText(context!!,""+e.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),""+e.message, Toast.LENGTH_SHORT).show()
             }
             .addOnCompleteListener { task ->
                 cartDataSource!!.cleanCart(Common.currentUser!!.uid!!)
@@ -417,7 +419,7 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(object :SingleObserver<Int>{
                         override fun onSuccess(t: Int) {
-                            Toast.makeText(context!!, "Order placed successfuly",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Order placed successfuly",Toast.LENGTH_SHORT).show()
                         }
 
                         override fun onSubscribe(d: Disposable) {
@@ -425,14 +427,14 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
                         }
 
                         override fun onError(e: Throwable) {
-                            Toast.makeText(context!!, ""+e.message,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), ""+e.message,Toast.LENGTH_SHORT).show()
                         }
                     })
             }
     }
 
     private fun getAddressFromLatLng(latitude: Double, longitude: Double): String{
-        val geocoder = Geocoder(context!!, Locale.getDefault())
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
         var result:String? = null
 
         try {
@@ -513,6 +515,11 @@ class CartFragment : Fragment(), ILoadTimeFromFirebaseCallback {
     }
 
     override fun onLoadTimeFailed(message: String) {
-        Toast.makeText(context!!,message,Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),message,Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().postSticky(MenuItemBack())
+        super.onDestroy()
     }
 }

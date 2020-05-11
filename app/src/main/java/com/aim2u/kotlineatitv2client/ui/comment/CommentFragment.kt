@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -81,8 +82,8 @@ class CommentFragment : BottomSheetDialogFragment(),
     }
 
     private fun initViews(itemView: View?) {
-        commentViewModel = ViewModelProviders.of(this).get(CommentViewModel::class.java)
-        dialog = SpotsDialog.Builder().setContext(context!!).setCancelable(false).build()
+        commentViewModel = ViewModelProvider(this).get(CommentViewModel::class.java)
+        dialog = SpotsDialog.Builder().setContext(requireContext()).setCancelable(false).build()
 
         recycler_comment = itemView!!.findViewById(R.id.recycler_comment) as RecyclerView
         recycler_comment!!.setHasFixedSize(true)
@@ -97,7 +98,7 @@ class CommentFragment : BottomSheetDialogFragment(),
     }
 
     override fun onCommentLoadFailed(message: String) {
-        Toast.makeText(context!!,""+message,Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),""+message,Toast.LENGTH_SHORT).show()
         dialog!!.dismiss()
     }
 

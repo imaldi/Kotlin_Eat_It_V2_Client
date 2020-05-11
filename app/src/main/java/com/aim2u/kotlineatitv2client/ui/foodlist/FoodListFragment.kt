@@ -13,7 +13,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aim2u.kotlineatitv2client.Adapter.MyFoodListAdapter
+import com.aim2u.kotlineatitv2client.EventBus.MenuItemBack
 import com.aim2u.kotlineatitv2client.R
+import org.greenrobot.eventbus.EventBus
 
 class FoodListFragment : Fragment() {
 
@@ -39,8 +41,8 @@ class FoodListFragment : Fragment() {
             ViewModelProviders.of(this).get(FoodListViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_food_list, container, false)
         initViews(root)
-        foodListViewModel.getMutableFoodModelListData().observe(this, Observer {
-            adapter = MyFoodListAdapter(context!!, it)
+        foodListViewModel.getMutableFoodModelListData().observe(viewLifecycleOwner, Observer {
+            adapter = MyFoodListAdapter(requireContext(), it)
             recyler_food_list!!.adapter = adapter
             recyler_food_list!!.layoutAnimation = layoutAnimationController
         })
@@ -53,5 +55,10 @@ class FoodListFragment : Fragment() {
         recyler_food_list!!.layoutManager = LinearLayoutManager(context)
 
         layoutAnimationController = AnimationUtils.loadLayoutAnimation(context,R.anim.layout_item_from_left)
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().postSticky(MenuItemBack())
+        super.onDestroy()
     }
 }

@@ -24,9 +24,6 @@ import com.aim2u.kotlineatitv2client.Adapter.PopularFoodItemClick
 import com.aim2u.kotlineatitv2client.Database.CartDataSource
 import com.aim2u.kotlineatitv2client.Database.CartDatabase
 import com.aim2u.kotlineatitv2client.Database.LocalCartDataSource
-import com.aim2u.kotlineatitv2client.EventBus.CategoryClick
-import com.aim2u.kotlineatitv2client.EventBus.CountCartEvent
-import com.aim2u.kotlineatitv2client.EventBus.FoodItemClick
 import com.aim2u.kotlineatitv2client.R
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,7 +33,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import com.aim2u.kotlineatitv2client.Common.Common
-import com.aim2u.kotlineatitv2client.EventBus.HideFABCart
+import com.aim2u.kotlineatitv2client.EventBus.*
 import com.aim2u.kotlineatitv2client.Model.BestDealModel
 import com.aim2u.kotlineatitv2client.Model.CategoryModel
 import com.aim2u.kotlineatitv2client.Model.FoodModel
@@ -57,6 +54,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var navController:NavController
     private var drawerLayout: DrawerLayout?=null
     private var dialog: AlertDialog?=null
+
+    private var menuItemClick =-1
 
     override fun onResume() {
         super.onResume()
@@ -103,14 +102,20 @@ class HomeActivity : AppCompatActivity() {
                     Toast.makeText(this@HomeActivity,"OK TEST",Toast.LENGTH_SHORT).show()
                     signOut()
                 } else if(item.itemId == R.id.nav_home){
-                    navController.navigate(R.id.nav_home)
+                    if (menuItemClick != item.itemId)
+                        navController.navigate(R.id.nav_home)
                 } else if(item.itemId == R.id.nav_cart){
-                    navController.navigate(R.id.nav_cart)
+                    if (menuItemClick != item.itemId)
+                        navController.navigate(R.id.nav_cart)
                 } else if(item.itemId == R.id.nav_menu){
-                    navController.navigate(R.id.nav_menu)
+                    if (menuItemClick != item.itemId)
+                        navController.navigate(R.id.nav_menu)
                 } else if(item.itemId == R.id.nav_view_order){
-                    navController.navigate(R.id.nav_view_order)
+                    if (menuItemClick != item.itemId)
+                        navController.navigate(R.id.nav_view_order)
                 }
+
+                menuItemClick = item!!.itemId
                 return true
             }
 
@@ -305,6 +310,14 @@ class HomeActivity : AppCompatActivity() {
             fab.hide()
         } else {
             fab.show()
+        }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun onMenuItemBack(event:MenuItemBack){
+        menuItemClick = -1
+        if (supportFragmentManager.backStackEntryCount > 0){
+            supportFragmentManager.popBackStack()
         }
     }
 

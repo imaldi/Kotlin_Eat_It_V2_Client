@@ -11,15 +11,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aim2u.kotlineatitv2client.Adapter.MyCategoriesAdapter
 import com.aim2u.kotlineatitv2client.Common.Common
 import com.aim2u.kotlineatitv2client.Common.SpacesItemDecoration
+import com.aim2u.kotlineatitv2client.EventBus.MenuItemBack
 import com.aim2u.kotlineatitv2client.R
 import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.fragment_category.*
+import org.greenrobot.eventbus.EventBus
 
 class MenuFragment : Fragment() {
 
@@ -35,17 +38,17 @@ class MenuFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         menuViewModel =
-            ViewModelProviders.of(this).get(MenuViewModel::class.java)
+            ViewModelProvider(this).get(MenuViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_category, container, false)
 
 
-        menuViewModel.getMessageError().observe(this,Observer{
+        menuViewModel.getMessageError().observe(viewLifecycleOwner,Observer{
             Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
         })
 
-        menuViewModel.getCategoryList().observe(this, Observer {
+        menuViewModel.getCategoryList().observe(viewLifecycleOwner, Observer {
             dialog.dismiss()
-            adapter = MyCategoriesAdapter(context!!, it)
+            adapter = MyCategoriesAdapter(requireContext(), it)
             recycler_menu!!.adapter = adapter
             recycler_menu!!.layoutAnimation = layoutAnimationController
         })
@@ -83,5 +86,10 @@ class MenuFragment : Fragment() {
                 8
             )
         )
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().postSticky(MenuItemBack())
+        super.onDestroy()
     }
 }

@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
             val listData = it
             val adapter =
                 MyPopularCategoriesAdapter(
-                    context!!,
+                    requireContext(),
                     listData
                 )
             recylerView!!.adapter = adapter
@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
         })
 
         homeViewModel.bestDealList.observe(viewLifecycleOwner, Observer {
-            val adapter = MyBestDealAdapter(context!!,it,false)
+            val adapter = MyBestDealAdapter(requireContext(),it,false)
             viewPager!!.adapter = adapter
         })
         initView(root)
