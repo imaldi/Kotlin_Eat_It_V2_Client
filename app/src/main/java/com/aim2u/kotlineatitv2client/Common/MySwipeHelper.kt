@@ -20,7 +20,8 @@ import kotlin.collections.HashMap
 
 abstract class MySwipeHelper (context:Context,
                               private val recyclerView: RecyclerView,
-                              internal var buttonWidth:Int):ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
+                              internal var buttonWidth:Int):ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT)
+{
     private var buttonList:MutableList<MyButton>?=null
     private lateinit var gestureDetector:GestureDetector
     private var swipePosition = -1

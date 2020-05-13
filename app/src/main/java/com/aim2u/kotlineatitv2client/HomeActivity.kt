@@ -224,7 +224,7 @@ class HomeActivity : AppCompatActivity() {
                                             for(foodSnapshot in p0.children)
                                             {
                                                 Common.foodSelected = foodSnapshot.getValue(FoodModel::class.java)
-                                                Common.categorySelected!!.menu_id = p0.key
+                                                Common.foodSelected!!.key = foodSnapshot.key
                                             }
                                             navController.navigate(R.id.nav_food_detail)
                                         } else {
