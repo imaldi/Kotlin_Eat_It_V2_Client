@@ -19,7 +19,7 @@ Preview :
 
 
 
-![Cart](https://website-aldi-majid.000webhostapp.com/pictures/1.jfif)
+![Cart](https://website-aldi-majid.000webhostapp.com/pictures/2.jfif)
 
 
 
@@ -34,7 +34,7 @@ Preview :
 
 
 
-![Order](https://website-aldi-majid.000webhostapp.com/pictures/1.jfif)
+![Order](https://website-aldi-majid.000webhostapp.com/pictures/3.jfif)
 
 
 
@@ -48,7 +48,7 @@ Preview :
 
 
 
-![NavDraw](https://website-aldi-majid.000webhostapp.com/pictures/1.jfif)
+![NavDraw](https://website-aldi-majid.000webhostapp.com/pictures/4.jfif)
 
 
 
@@ -61,4 +61,4 @@ Preview :
 
 
 
-![Category](https://website-aldi-majid.000webhostapp.com/pictures/1.jfif)
+![Category](https://website-aldi-majid.000webhostapp.com/pictures/5.jfif)
